@@ -1,0 +1,39 @@
+server {
+        listen 443 ssl;
+        listen [::]:443 ssl;
+
+        include snippets/self-signed.conf;
+        include snippets/ssl-params.conf;
+
+        index index.html index.htm index.php;
+
+        server_name _;
+
+        location ^~ /hass {
+             proxy_pass https://hass_ip:8123/;
+             proxy_set_header Host $http_host;
+        }
+
+        location ^~ /frontend_latest {
+             proxy_pass https://hass_ip:8123/frontend_latest;
+             proxy_set_header Host $http_host;
+        }
+
+        location ^~ /static {
+             proxy_pass https://hass_ip:8123/static;
+             proxy_set_header Host $http_host;
+        }
+
+        location ^~ /api {
+             proxy_pass https://hass_ip:8123/api;
+             proxy_set_header Upgrade $http_upgrade;
+             proxy_set_header Connection "Upgrade";
+             proxy_set_header Host $http_host;
+             proxy_read_timeout 3600s;
+        }
+
+        location ^~ /auth {
+             proxy_pass https://hass_ip:8123/auth;
+             proxy_set_header Host $http_host;
+        }
+}
